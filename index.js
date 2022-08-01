@@ -18,7 +18,7 @@ res -   represents outbound response
 res.send    -   data to send
 */
 app.get('/', (req, res) =>  {
-    res.send({ hi: 'there'});
+    res.send({ just: 'chilling'});
 });
 
 /*
