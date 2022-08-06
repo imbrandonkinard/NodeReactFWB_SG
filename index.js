@@ -1,6 +1,17 @@
-// import or require the express library
+// import or require the express library.
 const express = require('express');
- 
+const mongoose = require('mongoose');
+const cookieSession = require('cookie-session');
+const passport = require('passport');
+const keys = require('./config/keys');
+
+// require the model class for users
+require('./models/User.js');
+// require the passport configuration in passport.js
+require('./services/passport.js');
+
+mongoose.connect(keys.mongoURI);
+
 /* creates a unique express application
 used to listen to incoming requests and route to express side via node side
 then route to route handlers
@@ -8,18 +19,19 @@ then route to route handlers
 const app = express();
 
 /*
-app -   indicates underlying express app
-app.get -   creates new route handler
-get -   creates route handler watching for http method
-    -   gets info
-'/' -   specifies directory
-req -   represents incoming request
-res -   represents outbound response
-res.send    -   data to send
+Middleware
 */
-app.get('/', (req, res) =>  {
-    res.send({ just: 'chilling'});
-});
+app.use(
+    cookieSession({
+        maxAge: 30 * 24 * 60 * 60 * 1000,
+        keys: [keys.cookieKey]
+    })
+);
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+require('./routes/authRoutes.js')(app);
 
 /*
 when heroku runs our app it can inject environment variables
